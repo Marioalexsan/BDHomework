@@ -1,0 +1,9 @@
+DROP TABLE task_assignments;
+DROP TABLE tasks;
+DROP TABLE payment;
+DROP TABLE product_purchase;
+DROP TABLE payment_method;
+DROP TABLE purchase;
+DROP TABLE product_type;
+DROP TABLE employee_extended_info;
+DROP TABLE employee;

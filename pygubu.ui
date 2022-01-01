@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="tk.Toplevel" id="main_window">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <child>
+      <object class="ttk.Frame" id="login_panel">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="main_welcome">
+            <property name="text" translatable="yes">Welcome to BD Homework!</property>
+            <layout manager="pack">
+              <property name="ipadx">5</property>
+              <property name="ipady">10</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="login_frame">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Label" id="host_label">
+                <property name="anchor">n</property>
+                <property name="padding">0</property>
+                <property name="text" translatable="yes">Host</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property type="col" id="0" name="pad">5</property>
+                  <property type="row" id="0" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="host_entry">
+                <property name="text" translatable="yes">127.0.0.1</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property type="col" id="1" name="pad">5</property>
+                  <property type="row" id="0" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="port_label">
+                <property name="text" translatable="yes">Port</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                  <property type="col" id="0" name="pad">5</property>
+                  <property type="row" id="1" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="port_entry">
+                <property name="text" translatable="yes">3306</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                  <property type="col" id="1" name="pad">5</property>
+                  <property type="row" id="1" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="user_label">
+                <property name="text" translatable="yes">User</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                  <property type="col" id="0" name="pad">5</property>
+                  <property type="row" id="2" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="user_entry">
+                <property name="text" translatable="yes">bduser</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                  <property type="col" id="1" name="pad">5</property>
+                  <property type="row" id="2" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="password_label">
+                <property name="text" translatable="yes">Password</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                  <property type="col" id="0" name="pad">5</property>
+                  <property type="row" id="3" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="password_entry">
+                <property name="text" translatable="yes">bdpassword</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                  <property type="col" id="1" name="pad">5</property>
+                  <property type="row" id="3" name="pad">5</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="login_start">
+            <property name="command" type="command" cbtype="simple">on_accessdatabase</property>
+            <property name="text" translatable="yes">Access Database</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="table_list_frame">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="showing_label">
+            <property name="text" translatable="yes">Table list:</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Listbox" id="table_list">
+            <property name="selectmode">single</property>
+            <property name="width">40</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="open_table">
+            <property name="command" type="command" cbtype="simple">on_tableopen</property>
+            <property name="compound">top</property>
+            <property name="text" translatable="yes">Open Selected</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="logoff">
+            <property name="command" type="command" cbtype="simple">on_logoff</property>
+            <property name="text" translatable="yes">Log Off</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="table_view_frame">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="tk.Label" id="table_name">
+            <property name="text" translatable="yes">Viewing Table &lt;table_name&gt;</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Frame" id="runtime_table">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Frame" id="frame3">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="tk.Button" id="cancel_changes">
+                <property name="command" type="command" cbtype="simple">on_cancelchanges</property>
+                <property name="text" translatable="yes">Cancel</property>
+                <layout manager="pack">
+                  <property name="padx">5</property>
+                  <property name="pady">5</property>
+                  <property name="propagate">True</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Button" id="save_changes">
+                <property name="command" type="command" cbtype="simple">on_savechanges</property>
+                <property name="text" translatable="yes">Save Changes</property>
+                <layout manager="pack">
+                  <property name="padx">5</property>
+                  <property name="pady">5</property>
+                  <property name="propagate">True</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
