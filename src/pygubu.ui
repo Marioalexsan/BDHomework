@@ -230,7 +230,7 @@
           </object>
         </child>
         <child>
-          <object class="tk.Frame" id="frame3">
+          <object class="tk.Frame" id="table_actions">
             <property name="height">200</property>
             <property name="width">200</property>
             <layout manager="pack">
@@ -258,6 +258,85 @@
                 <layout manager="pack">
                   <property name="padx">5</property>
                   <property name="pady">5</property>
+                  <property name="propagate">True</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="table_row_edit_frame">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="table_row_name">
+            <property name="text" translatable="yes">&lt;Doing action on&gt; row &lt;row info&gt;</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="runtime_row">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="row_edit_result">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Label" id="row_edit_status">
+                <property name="text" translatable="yes">Status: Just Entered Menu</property>
+                <property name="wraplength">350</property>
+                <layout manager="pack">
+                  <property name="propagate">True</property>
+                  <property name="side">top</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="row_edit_actions">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Button" id="cancel_row">
+                <property name="command" type="command" cbtype="simple">on_cancelrowchanges</property>
+                <property name="text" translatable="yes">Back to Table</property>
+                <layout manager="pack">
+                  <property name="propagate">True</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="save_row">
+                <property name="command" type="command" cbtype="simple">on_saverowchanges</property>
+                <property name="text" translatable="yes">Apply Changes</property>
+                <layout manager="pack">
                   <property name="propagate">True</property>
                   <property name="side">left</property>
                 </layout>

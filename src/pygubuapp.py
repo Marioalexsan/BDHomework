@@ -33,6 +33,12 @@ class PygubuApp:
     def on_savechanges(self):
         pass
 
+    def on_cancelrowchanges(self):
+        pass
+
+    def on_saverowchanges(self):
+        pass
+
 
 if __name__ == '__main__':
     app = PygubuApp()
