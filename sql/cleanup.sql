@@ -1,5 +1,5 @@
-DROP TABLE task_assignments;
-DROP TABLE tasks;
+DROP TABLE task_assignment;
+DROP TABLE task;
 DROP TABLE payment;
 DROP TABLE product_purchase;
 DROP TABLE payment_method;

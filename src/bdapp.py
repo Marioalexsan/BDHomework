@@ -12,7 +12,6 @@ import tkinter
 class BDApp(PygubuApp):
     ROW_NEWROW = -1
     VALUE_AUTOASSIGN = '<Primary Key>'
-    VALUE_NONE = 'NULL'
 
     def __init__(self):
         super().__init__()
@@ -127,7 +126,7 @@ class BDApp(PygubuApp):
                 raise RuntimeError
 
         for i in range(0, len(widget_values)):
-            if widget_values[i] == BDApp.VALUE_NONE:
+            if widget_values[i] == MySQLTableProxy.VALUE_NONE:
                 widget_values[i] = None
 
         row = TableRow()
@@ -230,7 +229,7 @@ class BDApp(PygubuApp):
                 tuple_data = tuples[y][x]
 
                 if tuple_data is None:
-                    tuple_data = BDApp.VALUE_NONE
+                    tuple_data = MySQLTableProxy.VALUE_NONE
 
                 tkinter.Label(runtime_table, text=str(tuple_data)).grid(column=x, row=(y + 2), padx=5, pady=5)
 
@@ -307,7 +306,12 @@ class BDApp(PygubuApp):
 
                 wanted_index = 0
                 if self.row_editing != BDApp.ROW_NEWROW:
-                    wanted_index = valid_values.index(self.table_proxy.get_cache().tuples[self.row_editing][x])
+                    value = self.table_proxy.get_cache().tuples[self.row_editing][x]
+
+                    if value is None:
+                        value = MySQLTableProxy.VALUE_NONE
+
+                    wanted_index = valid_values.index(value)
 
                 cell = ttk.OptionMenu(runtime_row, tkinter.StringVar(), valid_values[wanted_index], *valid_values)
             else:
@@ -317,7 +321,7 @@ class BDApp(PygubuApp):
                     last_value = self.table_proxy.get_cache().tuples[self.row_editing][x]
 
                     if last_value is None:
-                        last_value = BDApp.VALUE_NONE
+                        last_value = MySQLTableProxy.VALUE_NONE
 
                     cell.insert(0, last_value)
 

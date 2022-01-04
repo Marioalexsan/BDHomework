@@ -10,11 +10,11 @@ CREATE TABLE employee (
   manager_id INT,  -- Allow null
 
   CONSTRAINT employee_manager_id_fk
-  FOREIGN KEY (manager_id) REFERENCES employee(employee_id)
+  FOREIGN KEY (manager_id) REFERENCES employee(employee_id),
 
   -- Names must be made of letters, space and hyphens
   CONSTRAINT employee_name_chk
-  CHECK (NOT REGEXP_LIKE(first_name, '[^a-zA-Z\\ \\-]+') AND NOT REGEXP_LIKE(last_name, '[^a-zA-Z\\ \\-]+'))
+  CHECK (NOT REGEXP_LIKE(first_name, '[^a-zA-Z\ \-]+') AND NOT REGEXP_LIKE(last_name, '[^a-zA-Z\ \-]+'))
 );
 
 INSERT INTO employee VALUES(100, 'Joseph', 'Joestar', NULL); -- mega manager
@@ -33,7 +33,7 @@ INSERT INTO employee VALUES(110, 'Susan', 'Dawn', 107);
 
 -- Employee extra info - 1:1 relationship with employee table
 CREATE TABLE employee_extended_info (
-  employee_id INT UNIQUE,
+  employee_id INT PRIMARY KEY,
   hire_date DATE,
   is_intern BOOLEAN NOT NULL,
   
@@ -47,7 +47,7 @@ INSERT INTO employee_extended_info VALUES(106, NULL, TRUE);
 CREATE TABLE product_type (
   product_type_id INT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  description DEFAULT(NULL) VARCHAR(4096)  -- Allow null
+  description VARCHAR(4096) DEFAULT(NULL) -- Allow null
 );
 
 INSERT INTO product_type VALUES(100, 'AlienWare PowerPC 9000', 'Personal Computer');

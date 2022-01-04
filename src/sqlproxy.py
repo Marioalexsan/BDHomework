@@ -2,7 +2,6 @@ from typing import Optional
 
 import mysql.connector
 
-
 def save_database(cursor):
     cursor.execute('SELECT DATABASE();')
     last_database = cursor.fetchall()[0][0]
@@ -75,7 +74,7 @@ class TableAttribute:
         results = [get_value_for_python(row[0]) for row in results]
 
         if self.can_have_null:
-            results.append(None)
+            results.append(MySQLTableProxy.VALUE_NONE)
 
         return results
 
@@ -188,6 +187,7 @@ class SQLTableCache:
 
 class MySQLTableProxy:
     RESULT_OK = 'RESULT_OK'
+    VALUE_NONE = 'NULL'
 
     def __init__(self, cursor, database, table):
         self.cursor = cursor
