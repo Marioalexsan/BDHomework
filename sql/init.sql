@@ -5,10 +5,16 @@
 -- Employee table
 CREATE TABLE employee (
   employee_id INT PRIMARY KEY,
-  first_name VARCHAR(50),
-  last_name VARCHAR(50),
-  manager_id INT,
-  CONSTRAINT employee_manager_id_fk FOREIGN KEY (manager_id) REFERENCES employee(employee_id)
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  manager_id INT,  -- Allow null
+
+  CONSTRAINT employee_manager_id_fk
+  FOREIGN KEY (manager_id) REFERENCES employee(employee_id)
+
+  -- Names must be made of letters, space and hyphens
+  CONSTRAINT employee_name_chk
+  CHECK (NOT REGEXP_LIKE(first_name, '[^a-zA-Z\\ \\-]+') AND NOT REGEXP_LIKE(last_name, '[^a-zA-Z\\ \\-]+'))
 );
 
 INSERT INTO employee VALUES(100, 'Joseph', 'Joestar', NULL); -- mega manager
@@ -29,7 +35,7 @@ INSERT INTO employee VALUES(110, 'Susan', 'Dawn', 107);
 CREATE TABLE employee_extended_info (
   employee_id INT UNIQUE,
   hire_date DATE,
-  is_intern BOOLEAN,
+  is_intern BOOLEAN NOT NULL,
   
   CONSTRAINT employee_extended_info_employee_id_fk 
   FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE
@@ -41,7 +47,7 @@ INSERT INTO employee_extended_info VALUES(106, NULL, TRUE);
 CREATE TABLE product_type (
   product_type_id INT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  description VARCHAR(4096)
+  description DEFAULT(NULL) VARCHAR(4096)  -- Allow null
 );
 
 INSERT INTO product_type VALUES(100, 'AlienWare PowerPC 9000', 'Personal Computer');
@@ -58,7 +64,7 @@ INSERT INTO product_type VALUES(109, 'HIPOWER Power Bank 25600mAh', 'Generic App
 -- Table of purchases that were done at this shop
 CREATE TABLE purchase (
   purchase_id INT PRIMARY KEY,
-  seller_id INT,
+  seller_id INT,  -- Allow null
   
   CONSTRAINT purchase_seller_id_fk
   FOREIGN KEY (seller_id) REFERENCES employee(employee_id)
@@ -72,8 +78,8 @@ INSERT INTO purchase VALUES(13082, 106);
 -- A specific product that was sold in a purchase. There can be many products sold in a purchase
 CREATE TABLE product_purchase (
   product_id INT PRIMARY KEY,
-  product_type_id INT,
-  purchase_id INT,
+  product_type_id INT NOT NULL,
+  purchase_id INT NOT NULL,
   
   CONSTRAINT product_purchase_product_type_id_fk
   FOREIGN KEY (product_type_id) REFERENCES product_type(product_type_id),
@@ -98,7 +104,7 @@ INSERT INTO product_purchase VALUES(20008, 108, 13082);
 -- Available payment methods
 CREATE TABLE payment_method (
   payment_method_id INT PRIMARY KEY,
-  name VARCHAR(100)
+  name VARCHAR(100) NOT NULL
 );
 
 INSERT INTO payment_method VALUES(0, 'Credit Card');
@@ -108,8 +114,8 @@ INSERT INTO payment_method VALUES(2, 'Sale Offer / Bonus');
 -- A source of money used to pay a purchase. Multiple payment options can be used in a single purchase (say, you pay with both card and cash)
 CREATE TABLE payment (
   payment_id INT PRIMARY KEY,
-  purchase_id INT,
-  payment_method_id INT,
+  purchase_id INT NOT NULL,
+  payment_method_id INT NOT NULL,
   amount DECIMAL(10, 2) NOT NULL,
   
   CONSTRAINT payment_purchase_id_fk
@@ -131,7 +137,7 @@ INSERT INTO payment VALUES (23771, 13082, 2, 120.00);
 CREATE TABLE task (
 	task_id INT PRIMARY KEY,
 	description VARCHAR(500) NOT NULL,
-	complete BOOLEAN DEFAULT(FALSE)
+	complete BOOLEAN DEFAULT(FALSE) NOT NULL
 );
 
 INSERT INTO task (task_id, description) VALUES(100, 'Repair order Corsair UltraPC 9500 submitted by client Miron Alexandru');
@@ -139,8 +145,8 @@ INSERT INTO task (task_id, description) VALUES(101, 'Repair order Corsair UltraP
 INSERT INTO task (task_id, description) VALUES(102, 'Maintain shop infrastructure');
 
 CREATE TABLE task_assignment (
-  task_id INT,
-  employee_id INT,
+  task_id INT NOT NULL,
+  employee_id INT NOT NULL,
   
   CONSTRAINT task_assignment_unique
   UNIQUE(task_id, employee_id),

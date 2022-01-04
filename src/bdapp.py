@@ -12,6 +12,7 @@ import tkinter
 class BDApp(PygubuApp):
     ROW_NEWROW = -1
     VALUE_AUTOASSIGN = '<Primary Key>'
+    VALUE_NONE = 'NULL'
 
     def __init__(self):
         super().__init__()
@@ -126,12 +127,14 @@ class BDApp(PygubuApp):
                 raise RuntimeError
 
         for i in range(0, len(widget_values)):
-            if str(widget_values[i]).upper() == 'NULL':
-                widget_values[i] = 'NULL'
+            if widget_values[i] == BDApp.VALUE_NONE:
+                widget_values[i] = None
 
         row = TableRow()
         row.attributes = [row[0] for row in self.table_proxy.get_cache().attributes]
         row.values = widget_values
+
+        retval = None
 
         if self.row_editing == BDApp.ROW_NEWROW:
             retval = self.table_proxy.add_row(row)
@@ -224,8 +227,12 @@ class BDApp(PygubuApp):
         # Add table tuples as rows 2 through N + 1
         for y in range(0, tuple_count):
             for x in range(0, attr_count):
-                tuple_data = str(tuples[y][x])
-                tkinter.Label(runtime_table, text=tuple_data).grid(column=x, row=(y + 2), padx=5, pady=5)
+                tuple_data = tuples[y][x]
+
+                if tuple_data is None:
+                    tuple_data = BDApp.VALUE_NONE
+
+                tkinter.Label(runtime_table, text=str(tuple_data)).grid(column=x, row=(y + 2), padx=5, pady=5)
 
             button = tkinter.Button(runtime_table, text='Edit')
             button.grid(column=attr_count, row=(y + 2), padx=5, pady=5)
@@ -310,7 +317,8 @@ class BDApp(PygubuApp):
                     last_value = self.table_proxy.get_cache().tuples[self.row_editing][x]
 
                     if last_value is None:
-                        last_value = 'NULL'
+                        last_value = BDApp.VALUE_NONE
+
                     cell.insert(0, last_value)
 
                 if self.row_editing == BDApp.ROW_NEWROW and attr_info.is_primary_key:
@@ -360,7 +368,6 @@ class BDApp(PygubuApp):
 
         self.cursor.execute('ROLLBACK;')
         self.transaction_active = False
-
 
 
 if __name__ == '__main__':

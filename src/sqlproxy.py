@@ -1,5 +1,3 @@
-from functools import *
-from itertools import *
 from typing import Optional
 
 import mysql.connector
@@ -18,6 +16,23 @@ def use_database(cursor, database):
 
 def restore_database(cursor, database):
     cursor.execute('USE {};'.format(database))
+
+
+def get_value_for_statement(value, sqltype):
+    if value is None:
+        return None
+
+    if sqltype.startswith('int') or sqltype.startswith('tinyint'):
+        value = int(value)
+
+    return value
+
+
+def get_value_for_python(value):
+    if value is None:
+        return None
+
+    return str(value)
 
 
 def decode_bytes(value):
@@ -57,12 +72,15 @@ class TableAttribute:
         results = cursor.fetchall()
 
         restore_database(cursor, last_database)
-        return [row[0] for row in results]
+        results = [get_value_for_python(row[0]) for row in results]
+
+        if self.can_have_null:
+            results.append(None)
+
+        return results
 
 
 class SQLTableCache:
-    RESULT_OK = 'RESULT_OK'
-
     def __init__(self, cursor, database, table):
         self.table = table
         self.database = database
@@ -93,9 +111,13 @@ class SQLTableCache:
         cursor.execute('USE {};'.format(self.database))
 
         # Decode DESCRIBE attribute types
-
         for i in range(0, len(self.attributes)):
             self.attributes[i] = tuple([decode_bytes(col) for col in self.attributes[i]])
+
+        # Convert tuple values to strings
+
+        for j in range(0, len(self.tuples)):
+            self.tuples[j] = tuple(get_value_for_python(value) for value in self.tuples[j])
 
         restore_database(cursor, last_database)
         return
@@ -140,7 +162,7 @@ class SQLTableCache:
 
         row = TableRow()
         row.attributes = [row[0] for row in self.attributes]
-        row.values = self.tuples[index]
+        row.values = list(self.tuples[index])
 
         return row
 
@@ -206,27 +228,40 @@ class MySQLTableProxy:
         statement = 'DELETE FROM {}'.format(self.table)
         statement += ' WHERE '
         for i in range(0, attr_count):
-            statement += '{0} = %s '.format(row.attributes[i])
+            # For NULL values, need to compare using 'IS'
+            if row.values[i] is not None:
+                statement += '{} = %s'.format(row.attributes[i])
+            else:
+                statement += '{} IS %s'.format(row.attributes[i])
 
             if i + 1 < attr_count:
-                statement += 'AND '
+                statement += ' AND '
 
         statement += ';'
-
-        self.invalidate_cache()
 
         last_database = save_database(self.cursor)
         use_database(self.cursor, self.database)
 
-        result = SQLTableCache.RESULT_OK
+        result = MySQLTableProxy.RESULT_OK
         try:
-            self.cursor.execute(statement, tuple(row.values))
+            params = row.values.copy()
+
+            for i in range(0, attr_count):
+                attr_info = sqlcache.get_attr_info(i)
+
+                params[i] = get_value_for_statement(params[i], attr_info.type)
+
+            self.cursor.execute(statement, tuple(params))
         except mysql.connector.Error as e:
             print('Failed to execute statement')
             result = str(e)
+        except Exception as e:
+            print('Failed to execute statement')
+            result = 'Input error: ' + str(e)
 
         restore_database(self.cursor, last_database)
 
+        self.invalidate_cache()
         return result
 
     def add_row(self, row: TableRow):
@@ -255,19 +290,31 @@ class MySQLTableProxy:
 
         statement += ');'
 
-        self.invalidate_cache()
-
         last_database = save_database(self.cursor)
         use_database(self.cursor, self.database)
 
-        result = SQLTableCache.RESULT_OK
+        sqlcache = self.get_cache()
+
+        result = MySQLTableProxy.RESULT_OK
         try:
-            self.cursor.execute(statement, tuple(row.values))
+            params = row.values.copy()
+
+            for i in range(0, attr_count):
+                attr_info = sqlcache.get_attr_info(i)
+
+                params[i] = get_value_for_statement(params[i], attr_info.type)
+
+            self.cursor.execute(statement, tuple(params))
         except mysql.connector.Error as e:
             print('Failed to execute statement')
             result = str(e)
+        except Exception as e:
+            print('Failed to execute statement')
+            result = 'Input error: ' + str(e)
 
         restore_database(self.cursor, last_database)
+
+        self.invalidate_cache()
         return result
 
     def edit_row(self, index, row: TableRow):
@@ -292,26 +339,40 @@ class MySQLTableProxy:
 
         statement += ' WHERE '
         for i in range(0, attr_count):
-            statement += '{} = %s'.format(last_row.attributes[i])
+            # For NULL, need to compare using 'IS'
+            if last_row.values[i] is not None:
+                statement += '{} = %s'.format(last_row.attributes[i])
+            else:
+                statement += '{} IS %s'.format(last_row.attributes[i])
 
             if i + 1 < attr_count:
                 statement += ' AND '
 
         statement += ';'
 
-        self.invalidate_cache()
-
         last_database = save_database(self.cursor)
         use_database(self.cursor, self.database)
 
-        result = SQLTableCache.RESULT_OK
+        result = MySQLTableProxy.RESULT_OK
         try:
             params = row.values.copy()
             params.extend(last_row.values)
+
+            for i in range(0, attr_count):
+                attr_info = sqlcache.get_attr_info(i)
+
+                params[i] = get_value_for_statement(params[i], attr_info.type)
+                params[i + attr_count] = get_value_for_statement(params[i + attr_count], attr_info.type)
+
             self.cursor.execute(statement, tuple(params))
         except mysql.connector.Error as e:
             print('Failed to execute statement')
             result = str(e)
+        except Exception as e:
+            print('Failed to execute statement')
+            result = 'Input error: ' + str(e)
 
         restore_database(self.cursor, last_database)
+
+        self.invalidate_cache()
         return result
