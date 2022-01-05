@@ -7,7 +7,7 @@ CREATE TABLE employee (
   employee_id INT PRIMARY KEY,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
-  manager_id INT,  -- Allow null
+  manager_id INT,
 
   CONSTRAINT employee_manager_id_fk
   FOREIGN KEY (manager_id) REFERENCES employee(employee_id),
@@ -34,20 +34,33 @@ INSERT INTO employee VALUES(110, 'Susan', 'Dawn', 107);
 -- Employee extra info - 1:1 relationship with employee table
 CREATE TABLE employee_extended_info (
   employee_id INT PRIMARY KEY,
-  hire_date DATE,
+  hire_date DATE NOT NULL,
   is_intern BOOLEAN NOT NULL,
   
   CONSTRAINT employee_extended_info_employee_id_fk 
-  FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE
+  FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE,
+
+  CONSTRAINT employee_is_intern_chk
+  CHECK (is_intern = 0 OR is_intern = 1)
 );
 
-INSERT INTO employee_extended_info VALUES(106, NULL, TRUE);
+INSERT INTO employee_extended_info VALUES(100, '2011-01-01', FALSE);
+INSERT INTO employee_extended_info VALUES(101, '2012-01-01', FALSE);
+INSERT INTO employee_extended_info VALUES(102, '2012-01-01', FALSE);
+INSERT INTO employee_extended_info VALUES(103, '2012-01-01', FALSE);
+INSERT INTO employee_extended_info VALUES(104, '2012-01-01', FALSE);
+INSERT INTO employee_extended_info VALUES(105, '2012-02-13', FALSE);
+INSERT INTO employee_extended_info VALUES(106, '2012-02-13', FALSE);
+INSERT INTO employee_extended_info VALUES(107, '2012-02-13', FALSE);
+INSERT INTO employee_extended_info VALUES(108, '2012-02-14', FALSE);
+INSERT INTO employee_extended_info VALUES(109, '2012-05-14', TRUE);
+INSERT INTO employee_extended_info VALUES(110, '2012-06-06', TRUE);
 
 -- Products that are sold by this shop
 CREATE TABLE product_type (
   product_type_id INT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  description VARCHAR(4096) DEFAULT(NULL) -- Allow null
+  description VARCHAR(4096) DEFAULT(NULL)
 );
 
 INSERT INTO product_type VALUES(100, 'AlienWare PowerPC 9000', 'Personal Computer');
@@ -64,7 +77,7 @@ INSERT INTO product_type VALUES(109, 'HIPOWER Power Bank 25600mAh', 'Generic App
 -- Table of purchases that were done at this shop
 CREATE TABLE purchase (
   purchase_id INT PRIMARY KEY,
-  seller_id INT,  -- Allow null
+  seller_id INT,
   
   CONSTRAINT purchase_seller_id_fk
   FOREIGN KEY (seller_id) REFERENCES employee(employee_id)
@@ -74,6 +87,7 @@ INSERT INTO purchase VALUES(13079, 104);
 INSERT INTO purchase VALUES(13080, 105);
 INSERT INTO purchase VALUES(13081, 106);
 INSERT INTO purchase VALUES(13082, 106);
+INSERT INTO purchase VALUES(13083, 106);
 
 -- A specific product that was sold in a purchase. There can be many products sold in a purchase
 CREATE TABLE product_purchase (
@@ -99,7 +113,9 @@ INSERT INTO product_purchase VALUES(20005, 108, 13080);
 INSERT INTO product_purchase VALUES(20006, 107, 13081);
 
 INSERT INTO product_purchase VALUES(20007, 107, 13082);
-INSERT INTO product_purchase VALUES(20008, 108, 13082);
+
+INSERT INTO product_purchase VALUES(20008, 108, 13083);
+INSERT INTO product_purchase VALUES(20009, 108, 13083);
 
 -- Available payment methods
 CREATE TABLE payment_method (
@@ -110,6 +126,8 @@ CREATE TABLE payment_method (
 INSERT INTO payment_method VALUES(0, 'Credit Card');
 INSERT INTO payment_method VALUES(1, 'Cash');
 INSERT INTO payment_method VALUES(2, 'Sale Offer / Bonus');
+INSERT INTO payment_method VALUES(3, 'Bank Check');
+INSERT INTO payment_method VALUES(4, 'Other');
 
 -- A source of money used to pay a purchase. Multiple payment options can be used in a single purchase (say, you pay with both card and cash)
 CREATE TABLE payment (
@@ -122,7 +140,10 @@ CREATE TABLE payment (
   FOREIGN KEY (purchase_id) REFERENCES purchase(purchase_id),
   
   CONSTRAINT payment_payment_method_id_fk
-  FOREIGN KEY (payment_method_id) REFERENCES payment_method(payment_method_id)
+  FOREIGN KEY (payment_method_id) REFERENCES payment_method(payment_method_id),
+
+  CONSTRAINT payment_amount_chk
+  CHECK (amount >= 0)
 );
 
 INSERT INTO payment VALUES (23765, 13079, 0, 500.00);
@@ -135,14 +156,19 @@ INSERT INTO payment VALUES (23771, 13082, 2, 120.00);
 
 -- Shop task / commisions / etc (let's say this shop also acts as a repair shop)
 CREATE TABLE task (
-	task_id INT PRIMARY KEY,
-	description VARCHAR(500) NOT NULL,
-	complete BOOLEAN DEFAULT(FALSE) NOT NULL
+  task_id INT PRIMARY KEY,
+  description VARCHAR(500) NOT NULL,
+  complete BOOLEAN DEFAULT(FALSE) NOT NULL,
+
+  CONSTRAINT task_complete_chk
+  CHECK (complete = 0 or complete = 1)
 );
 
 INSERT INTO task (task_id, description) VALUES(100, 'Repair order Corsair UltraPC 9500 submitted by client Miron Alexandru');
 INSERT INTO task (task_id, description) VALUES(101, 'Repair order Corsair UltraPC 9000 submitted by client John Johnson');
 INSERT INTO task (task_id, description) VALUES(102, 'Maintain shop infrastructure');
+INSERT INTO task (task_id, description) VALUES(103, 'Do an inventory count');
+INSERT INTO task (task_id, description) VALUES(104, 'Delivery order for client Steven Bohr');
 
 CREATE TABLE task_assignment (
   task_id INT NOT NULL,

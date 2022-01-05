@@ -129,6 +129,16 @@
           </object>
         </child>
         <child>
+          <object class="ttk.Label" id="login_status">
+            <property name="text" translatable="yes">Status: Waiting for login</property>
+            <property name="wraplength">175</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
           <object class="ttk.Button" id="login_start">
             <property name="command" type="command" cbtype="simple">on_accessdatabase</property>
             <property name="text" translatable="yes">Access Database</property>

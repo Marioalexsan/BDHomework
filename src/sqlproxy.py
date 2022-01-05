@@ -1,6 +1,6 @@
 from typing import Optional
-
 import mysql.connector
+
 
 def save_database(cursor):
     cursor.execute('SELECT DATABASE();')
@@ -71,10 +71,10 @@ class TableAttribute:
         results = cursor.fetchall()
 
         restore_database(cursor, last_database)
-        results = [get_value_for_python(row[0]) for row in results]
 
+        results = [get_value_for_python(row[0]) for row in results]
         if self.can_have_null:
-            results.append(MySQLTableProxy.VALUE_NONE)
+            results.append(MySQLTableProxy.VALUE_NULL)
 
         return results
 
@@ -85,8 +85,6 @@ class SQLTableCache:
         self.database = database
 
         last_database = save_database(cursor)
-
-        # Switch database
         use_database(cursor, database)
 
         # Get attributes
@@ -114,7 +112,6 @@ class SQLTableCache:
             self.attributes[i] = tuple([decode_bytes(col) for col in self.attributes[i]])
 
         # Convert tuple values to strings
-
         for j in range(0, len(self.tuples)):
             self.tuples[j] = tuple(get_value_for_python(value) for value in self.tuples[j])
 
@@ -187,7 +184,7 @@ class SQLTableCache:
 
 class MySQLTableProxy:
     RESULT_OK = 'RESULT_OK'
-    VALUE_NONE = 'NULL'
+    VALUE_NULL = 'NULL'
 
     def __init__(self, cursor, database, table):
         self.cursor = cursor
@@ -203,6 +200,14 @@ class MySQLTableProxy:
 
     def invalidate_cache(self):
         self.__cache = None
+
+    def get_attributes(self):
+        sqlcache = self.get_cache()
+        return sqlcache.attributes
+
+    def get_tuples(self):
+        sqlcache = self.get_cache()
+        return sqlcache.tuples
 
     def get_attr_info(self, attr):
         sqlcache = self.get_cache()
